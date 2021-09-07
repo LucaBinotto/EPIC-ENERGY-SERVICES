@@ -28,12 +28,12 @@ public class Fattura {
 	private BigDecimal importo;
 	@ManyToOne
 	private StatoFattura stato;
+	private Cliente cliente;
 	
-	
-	public Fattura() {
-		data = LocalDate.now();
-		anno = LocalDate.now().getYear();
-	}
-	
+//	public Fattura() {
+//		data = LocalDate.now();
+//		anno = LocalDate.now().getYear();
+//	}
+	//TODO
 	
 }
