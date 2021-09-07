@@ -16,11 +16,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import it.epicode.be.dto.UtenteRegistrDTO;
+import it.epicode.be.model.Utente;
 import it.epicode.be.security.JwtUtils;
 import it.epicode.be.security.UserDetailsImpl;
 import it.epicode.be.security.login.LoginRequest;
 import it.epicode.be.security.login.LoginResponse;
+import it.epicode.be.service.UtenteService;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api")
 public class AuthController {
@@ -33,6 +38,9 @@ public class AuthController {
 	
 	@Autowired
 	JwtUtils jwtUtils;
+	
+	@Autowired
+	UtenteService uts;
 	
 	
 	@PostMapping("/login")
@@ -54,5 +62,23 @@ public class AuthController {
 				new LoginResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles, userDetails.getExpirationTime()));
 	}
 	
+	@PostMapping("/registrazione")
+	public ResponseEntity<?> registerUser(@RequestBody UtenteRegistrDTO ur){
+		
+		String plainPassword = ur.getPassword();
+		ur.setPassword(encoder.encode(plainPassword));
+		
+		Utente u = ur.toUtente();
+		
+		uts.save(u);
+		
+		log.info("email "+ u.getEmail());
+		log.info("nome "+ u.getName());
+		log.info("username "+ u.getUsername());
+		log.info("password "+ u.getPassword());
+				
+		
+		return ResponseEntity.ok("Salvataggio utente avvenuto con successo: " + u.getUsername());                                                                                                                                                                               		
+	}
 	
 }

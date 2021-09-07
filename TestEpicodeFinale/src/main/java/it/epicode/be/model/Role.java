@@ -15,7 +15,7 @@ import lombok.Data;
 @Table(name = "auth_roles")
 public class Role {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "auth_roles_generator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "auth_roles_generator")
 	@SequenceGenerator(name="auth_roles_generator", sequenceName = "auth_roles_seq")
 	private Long id;
 	public enum RoleType {
