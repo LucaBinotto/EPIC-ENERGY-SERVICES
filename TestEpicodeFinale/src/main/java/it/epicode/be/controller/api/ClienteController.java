@@ -1,9 +1,15 @@
 package it.epicode.be.controller.api;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,52 +27,48 @@ import it.epicode.be.dto.ClienteDTO;
 import it.epicode.be.exception.EntityNotFoundException;
 import it.epicode.be.model.Cliente;
 import it.epicode.be.service.ClienteService;
-import it.epicode.be.service.IndirizzoService;
 
 @RestController
 @RequestMapping("/api/cliente")
 public class ClienteController {
-	
+
 	@Autowired
 	ClienteService cls;
-	@Autowired
-	IndirizzoService ins;
-	
-	@GetMapping //Restituisce tutti i clienti paginati
+
+	@GetMapping // Restituisce tutti i clienti paginati
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ResponseEntity<Page<ClienteDTO>> listaCliente(@RequestParam int pageNum, @RequestParam int pageSize) {
 		Pageable pageable = PageRequest.of(pageNum, pageSize);
 		Page<Cliente> clienti = cls.findAll(pageable);
 		Page<ClienteDTO> clientiDto = clienti.map(ClienteDTO::fromCliente);
-				
+
 		return new ResponseEntity<>(clientiDto, HttpStatus.OK);
 	}
-	
-	
-	@PostMapping //salva un cliente
+
+	@PostMapping // salva un cliente
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<ClienteDTO> save(@RequestBody ClienteDTO clienteDto) {
 		Cliente cliente = clienteDto.toCliente();
 		Cliente inserted = cls.save(cliente);
-		return new ResponseEntity<>(ClienteDTO.fromCliente(inserted),HttpStatus.CREATED);
+		return new ResponseEntity<>(ClienteDTO.fromCliente(inserted), HttpStatus.CREATED);
 	}
-	
+
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ClienteDTO clienteDto) {
-		if(!id.equals(clienteDto.getId())) {
-			return new ResponseEntity<>("L'id non corrisponde",HttpStatus.BAD_REQUEST);
+		if (!id.equals(clienteDto.getId())) {
+			return new ResponseEntity<>("L'id non corrisponde", HttpStatus.BAD_REQUEST);
 		}
 		Cliente cliente = clienteDto.toCliente();
 		Cliente updated;
 		try {
 			updated = cls.update(cliente);
-			return new ResponseEntity<>(ClienteDTO.fromCliente(updated),HttpStatus.OK);
+			return new ResponseEntity<>(ClienteDTO.fromCliente(updated), HttpStatus.OK);
 		} catch (EntityNotFoundException e) {
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
-		}		
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
@@ -77,4 +79,68 @@ public class ClienteController {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		}
 	}
+
+	@GetMapping("/ordina")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	public ResponseEntity<Page<ClienteDTO>> listaClienteOrdinata(@RequestParam int pageNum, @RequestParam int pageSize,
+			@RequestParam boolean ragioneSociale, @RequestParam boolean fatturatoAnnuale,
+			@RequestParam boolean dataInserimento, @RequestParam boolean dataUltimoContatto,
+			@RequestParam boolean sedeLegale, @RequestParam boolean discendente) {
+		Pageable pageable;
+		if (discendente) {
+			if(ragioneSociale) {
+				pageable = PageRequest.of(pageNum, pageSize, Sort.by("ragioneSociale").descending().and(Sort.by("id")));
+			}else if(fatturatoAnnuale) {
+				pageable = PageRequest.of(pageNum, pageSize, Sort.by("fatturatoAnnuale").descending().and(Sort.by("id")));
+			}else if(dataInserimento) {
+				pageable = PageRequest.of(pageNum, pageSize, Sort.by("dataInserimento").descending().and(Sort.by("id")));
+			}else if(dataUltimoContatto) {
+				pageable = PageRequest.of(pageNum, pageSize, Sort.by("dataUltimoContatto").descending().and(Sort.by("id")));
+			}else if(sedeLegale) {
+				pageable = PageRequest.of(pageNum, pageSize, Sort.by("sedeLegale.comune.provincia").descending().and(Sort.by("id")));
+			}else {
+				pageable = PageRequest.of(pageNum, pageSize,Sort.by("id").descending());
+			}
+
+		}else {
+			if(ragioneSociale) {
+				pageable = PageRequest.of(pageNum, pageSize, Sort.by("ragioneSociale").and(Sort.by("id")));
+			}else if(fatturatoAnnuale) {
+				pageable = PageRequest.of(pageNum, pageSize, Sort.by("fatturatoAnnuale").and(Sort.by("id")));
+			}else if(dataInserimento) {
+				pageable = PageRequest.of(pageNum, pageSize, Sort.by("dataInserimento").and(Sort.by("id")));
+			}else if(dataUltimoContatto) {
+				pageable = PageRequest.of(pageNum, pageSize, Sort.by("dataUltimoContatto").and(Sort.by("id")));
+			}else if(sedeLegale) {
+				pageable = PageRequest.of(pageNum, pageSize, Sort.by("sedeLegale.comune.provincia").and(Sort.by("id")));
+			}else {
+				pageable = PageRequest.of(pageNum, pageSize,Sort.by("id"));
+			}
+		}
+		return pager(pageable);
+	}
+	
+	private ResponseEntity<Page<ClienteDTO>> pager(Pageable pageable){
+		Page<Cliente> clienti = cls.findAll(pageable);
+		Page<ClienteDTO> clientiDto = clienti.map(ClienteDTO::fromCliente);
+		return new ResponseEntity<>(clientiDto, HttpStatus.OK);
+	}
+	
+
+	@GetMapping("/filtra")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	public ResponseEntity<Page<ClienteDTO>> listaClienteFiltrata(@RequestParam int pageNum, @RequestParam int pageSize,
+			@RequestParam Optional<String> ragioneSociale, @RequestParam Optional<BigDecimal> fatturatoAnnuale,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataInserimento,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataUltimoContatto,
+			@RequestParam Optional<String> provincia) {
+
+		Pageable pageable = PageRequest.of(pageNum, pageSize);
+
+		Page<Cliente> clienti = cls.findAll(pageable);
+		Page<ClienteDTO> clientiDto = clienti.map(ClienteDTO::fromCliente);
+
+		return new ResponseEntity<>(clientiDto, HttpStatus.OK);
+	}
+
 }

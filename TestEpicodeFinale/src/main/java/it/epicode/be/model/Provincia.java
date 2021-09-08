@@ -19,16 +19,11 @@ public class Provincia {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(unique = true, nullable = false)
 	private Long id;
+	@Column(unique = true)
 	private String nome;
+	@Column(unique = true)
 	private String sigla;
 	private String regione;
-	
-	
-	
-	
-	
-	
-	
 	
 	
 }

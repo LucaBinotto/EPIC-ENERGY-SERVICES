@@ -26,7 +26,7 @@ public class IndirizzoDTO {
 		iDto.setLocalita(i.getLocalita());
 		iDto.setCap(i.getCap());
 
-		if (iDto.getComune() != null) {
+		if (i.getComune() != null) {
 			iDto.setIdComune(i.getComune().getId());
 			iDto.setComune(i.getComune().getNome());
 			iDto.setIdProvincia(i.getComune().getProvincia().getId());
@@ -42,17 +42,17 @@ public class IndirizzoDTO {
 		ind.setCivico(civico);
 		ind.setLocalita(localita);
 		ind.setCap(cap);
-
+		
 		if (idComune != null) {
-			Provincia prov = new Provincia();
-			prov.setId(idProvincia);
-			prov.setNome(provincia);
-			Comune com = new Comune();
-			com.setId(idComune);
-			com.setNome(comune);
-			com.setProvincia(prov);
-
-			ind.setComune(com);
+		Provincia prov = new Provincia();
+		prov.setId(idProvincia);
+		prov.setNome(provincia);
+		Comune com = new Comune();
+		com.setId(idComune);
+		com.setNome(comune);
+		com.setProvincia(prov);
+		
+		ind.setComune(com);
 		}
 		return ind;
 	}

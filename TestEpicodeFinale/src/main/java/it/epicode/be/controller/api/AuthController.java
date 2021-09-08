@@ -1,6 +1,9 @@
 package it.epicode.be.controller.api;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +20,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.epicode.be.dto.UtenteRegistrDTO;
+import it.epicode.be.model.Role;
+import it.epicode.be.model.Role.RoleType;
 import it.epicode.be.model.Utente;
 import it.epicode.be.security.JwtUtils;
 import it.epicode.be.security.UserDetailsImpl;
 import it.epicode.be.security.login.LoginRequest;
 import it.epicode.be.security.login.LoginResponse;
+import it.epicode.be.service.RoleService;
 import it.epicode.be.service.UtenteService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,24 +38,24 @@ public class AuthController {
 
 	@Autowired
 	AuthenticationManager authenticationManager;
-	
+
 	@Autowired
 	PasswordEncoder encoder;
-	
+
 	@Autowired
 	JwtUtils jwtUtils;
-	
+
 	@Autowired
 	UtenteService uts;
-	
-	
+	@Autowired
+	RoleService ros;
+
 	@PostMapping("/login")
 	public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-		
 		authentication.getAuthorities();
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generateJwtToken(authentication);
@@ -58,27 +64,37 @@ public class AuthController {
 		List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.collect(Collectors.toList());
 
-		return ResponseEntity.ok(
-				new LoginResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles, userDetails.getExpirationTime()));
+		return ResponseEntity.ok(new LoginResponse(jwt, userDetails.getId(), userDetails.getUsername(),
+				userDetails.getEmail(), roles, userDetails.getExpirationTime()));
 	}
-	
+
 	@PostMapping("/registrazione")
-	public ResponseEntity<?> registerUser(@RequestBody UtenteRegistrDTO ur){
-		
+	public ResponseEntity<?> registerUser(@RequestBody UtenteRegistrDTO ur) {
+
 		String plainPassword = ur.getPassword();
 		ur.setPassword(encoder.encode(plainPassword));
-		
+
 		Utente u = ur.toUtente();
-		
+		Set<Role> ruoloBase = new HashSet<>();
+		Optional<Role> user = ros.findByRoleType(RoleType.ROLE_USER);
+		Role role;
+		if (user.isEmpty()) {
+			Role userRole = new Role();
+			userRole.setRoleType(RoleType.ROLE_USER);
+			role = ros.save(userRole);
+		} else {
+			role = user.get();
+		}
+		ruoloBase.add(role);
+		u.setRoles(ruoloBase);
 		uts.save(u);
-		
-		log.info("email "+ u.getEmail());
-		log.info("nome "+ u.getName());
-		log.info("username "+ u.getUsername());
-		log.info("password "+ u.getPassword());
-				
-		
-		return ResponseEntity.ok("Salvataggio utente avvenuto con successo: " + u.getUsername());                                                                                                                                                                               		
+
+		log.info("email " + u.getEmail());
+		log.info("nome " + u.getName());
+		log.info("username " + u.getUsername());
+		log.info("password " + u.getPassword());
+
+		return ResponseEntity.ok("Salvataggio utente avvenuto con successo: " + u.getUsername());
 	}
-	
+
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import it.epicode.be.exception.EntityNotFoundException;
 import it.epicode.be.model.Role;
+import it.epicode.be.model.Role.RoleType;
 import it.epicode.be.repository.RoleRepository;
 import it.epicode.be.service.RoleService;
 
@@ -21,14 +22,12 @@ public class ImpRoleService implements RoleService {
 	private RoleRepository ror;
 	@Value("${exception.entitynotfound}")
 	String entitynotfound;
-	
-	
+
 	@Override
 	public Role save(Role role) {
 		return ror.save(role);
 	}
-	
-	
+
 	@Override
 	public Role update(Role newRole) throws EntityNotFoundException {
 		Optional<Role> old = ror.findById(newRole.getId());
@@ -37,20 +36,23 @@ public class ImpRoleService implements RoleService {
 		}
 		return ror.save(newRole);
 	}
-	
-	
+
 	@Override
 	public void delete(Long id) throws EntityNotFoundException {
 		try {
 			ror.deleteById(id);
-		}catch(EmptyResultDataAccessException e) {
+		} catch (EmptyResultDataAccessException e) {
 			throw new EntityNotFoundException(entitynotfound, Role.class);
 		}
 	}
 
-	
 	@Override
 	public Page<Role> findAll(Pageable pageable) {
 		return ror.findAll(pageable);
+	}
+
+	@Override
+	public Optional<Role> findByRoleType(RoleType roleUser) {
+		return ror.findByRoleType(roleUser);
 	}
 }

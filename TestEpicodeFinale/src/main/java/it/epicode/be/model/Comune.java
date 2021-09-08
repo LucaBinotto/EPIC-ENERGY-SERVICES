@@ -16,6 +16,8 @@ import lombok.Data;
 @Component
 public class Comune {
 
+	//TODO Aggiungere Codice Comune
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(unique = true, nullable = false)
