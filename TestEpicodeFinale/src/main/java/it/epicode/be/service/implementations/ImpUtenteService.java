@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import it.epicode.be.exception.EntityNotFoundException;
@@ -41,5 +43,10 @@ public class ImpUtenteService implements UtenteService{
 		}catch(EmptyResultDataAccessException e) {
 			throw new EntityNotFoundException(entitynotfound, Utente.class);
 		}
+	}
+
+	@Override
+	public Page<Utente> findAll(Pageable pageable) {
+		return utr.findAll(pageable);
 	}
 }

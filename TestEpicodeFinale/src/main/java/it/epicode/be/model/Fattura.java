@@ -28,6 +28,7 @@ public class Fattura {
 	private BigDecimal importo;
 	@ManyToOne
 	private StatoFattura stato;
+	@ManyToOne
 	private Cliente cliente;
 	
 //	public Fattura() {

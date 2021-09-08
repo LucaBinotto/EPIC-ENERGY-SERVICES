@@ -7,7 +7,8 @@ import lombok.Data;
 
 @Data
 public class IndirizzoDTO {
-
+	
+	private Long id;
 	private String via;
 	private String civico;
 	private String localita;
@@ -19,6 +20,7 @@ public class IndirizzoDTO {
 
 	public static IndirizzoDTO fromIndirizzo(Indirizzo i) {
 		IndirizzoDTO iDto = new IndirizzoDTO();
+		iDto.setId(i.getId());
 		iDto.setVia(i.getVia());
 		iDto.setCivico(i.getCivico());
 		iDto.setLocalita(i.getLocalita());
@@ -33,6 +35,7 @@ public class IndirizzoDTO {
 
 	public Indirizzo toIndirizzo() {
 		Indirizzo ind = new Indirizzo();
+		ind.setId(id);
 		ind.setVia(via);
 		ind.setCivico(civico);
 		ind.setLocalita(localita);
@@ -48,11 +51,6 @@ public class IndirizzoDTO {
 		
 		ind.setComune(com);
 		
-		//TODO pulizia codice
-//		Optional<Comune> com = cor.findByNomeAndProvinciaNome(comune, provincia);
-//		if (com.isPresent()) {
-//			ind.setComune(com.get());
-//		}
 		return ind;
 	}
 }

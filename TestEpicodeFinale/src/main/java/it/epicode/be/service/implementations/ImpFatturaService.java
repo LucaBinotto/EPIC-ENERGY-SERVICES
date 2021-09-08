@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import it.epicode.be.exception.EntityNotFoundException;
@@ -42,5 +44,10 @@ public class ImpFatturaService implements FatturaService {
 		}catch(EmptyResultDataAccessException e) {
 			throw new EntityNotFoundException(entitynotfound, Fattura.class);
 		}
+	}
+	
+	@Override
+	public Page<Fattura> findAll(Pageable pageable) {
+		return far.findAll(pageable);
 	}
 }

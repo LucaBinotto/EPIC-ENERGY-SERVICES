@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import it.epicode.be.exception.EntityNotFoundException;
@@ -41,5 +43,10 @@ public class ImpProvinciaService implements ProvinciaService{
 		}catch(EmptyResultDataAccessException e) {
 			throw new EntityNotFoundException(entitynotfound, Provincia.class);
 		}
+	}
+	
+	@Override
+	public Page<Provincia> findAll(Pageable pageable) {
+		return prr.findAll(pageable);
 	}
 }

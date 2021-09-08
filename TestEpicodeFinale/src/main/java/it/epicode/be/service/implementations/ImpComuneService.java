@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import it.epicode.be.exception.EntityNotFoundException;
@@ -41,5 +43,10 @@ public class ImpComuneService implements ComuneService{
 		}catch(EmptyResultDataAccessException e) {
 			throw new EntityNotFoundException(entitynotfound, Comune.class);
 		}
+	}
+
+	@Override
+	public Page<Comune> findAll(Pageable pageable) {
+		return cor.findAll(pageable);
 	}
 }
