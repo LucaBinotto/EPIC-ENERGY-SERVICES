@@ -1,5 +1,7 @@
 package it.epicode.be.service.implementations;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,5 +51,61 @@ public class ImpClienteService implements ClienteService{
 	@Override
 	public Page<Cliente> findAll(Pageable pageable) {
 		return clr.findAll(pageable);
+	}
+
+	@Override
+	public Page<Cliente> findByRagioneSociale(String ragioneSociale, Pageable pageable) {
+		return clr.findByRagioneSociale(ragioneSociale,pageable);
+	}
+
+	@Override
+	public Page<Cliente> findByRagioneSocialeContaining(String ragioneSociale, Pageable pageable) {
+		return clr.findByRagioneSocialeContaining(ragioneSociale,pageable);
+	}
+
+	@Override
+	public Page<Cliente> findByFatturatoAnnualeBetween(BigDecimal bigDecimal, BigDecimal bigDecimal2,
+			Pageable pageable) {
+		return clr.findByFatturatoAnnualeBetween(bigDecimal,bigDecimal2, pageable);
+	}
+
+	@Override
+	public Page<Cliente> findByFatturatoAnnualeGreaterThanEqual(BigDecimal bigDecimal, Pageable pageable) {
+		return clr.findByFatturatoAnnualeGreaterThanEqual(bigDecimal, pageable);
+	}
+
+	@Override
+	public Page<Cliente> findByFatturatoAnnualeLessThanEqual(BigDecimal bigDecimal, Pageable pageable) {
+		return clr.findByFatturatoAnnualeLessThanEqual(bigDecimal, pageable);
+	}
+
+	@Override
+	public Page<Cliente> findByDataInserimentoBetween(LocalDate localDate, LocalDate localDate2, Pageable pageable) {
+		return clr.findByDataInserimentoBetween(localDate, localDate2, pageable);
+	}
+
+	@Override
+	public Page<Cliente> findByDataInserimentoGreaterThanEqual(LocalDate localDate, Pageable pageable) {
+		return clr.findByDataInserimentoGreaterThanEqual(localDate, pageable);
+	}
+
+	@Override
+	public Page<Cliente> findByDataInserimentoLessThanEqual(LocalDate localDate, Pageable pageable) {
+		return clr.findByDataInserimentoLessThanEqual(localDate, pageable);
+	}
+
+	@Override
+	public Page<Cliente> findByDataUltimoContattoBetween(LocalDate localDate, LocalDate localDate2, Pageable pageable) {
+		return clr.findByDataUltimoContattoBetween(localDate, localDate2, pageable);
+	}
+
+	@Override
+	public Page<Cliente> findByDataUltimoContattoGreaterThanEqual(LocalDate localDate, Pageable pageable) {
+		return clr.findByDataUltimoContattoGreaterThanEqual(localDate, pageable);
+	}
+
+	@Override
+	public Page<Cliente> findByDataUltimoContattoLessThanEqual(LocalDate localDate, Pageable pageable) {
+		return clr.findByDataUltimoContattoLessThanEqual(localDate, pageable);
 	}
 }

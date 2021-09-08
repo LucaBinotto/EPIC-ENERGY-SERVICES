@@ -88,58 +88,86 @@ public class ClienteController {
 			@RequestParam boolean sedeLegale, @RequestParam boolean discendente) {
 		Pageable pageable;
 		if (discendente) {
-			if(ragioneSociale) {
+			if (ragioneSociale) {
 				pageable = PageRequest.of(pageNum, pageSize, Sort.by("ragioneSociale").descending().and(Sort.by("id")));
-			}else if(fatturatoAnnuale) {
-				pageable = PageRequest.of(pageNum, pageSize, Sort.by("fatturatoAnnuale").descending().and(Sort.by("id")));
-			}else if(dataInserimento) {
-				pageable = PageRequest.of(pageNum, pageSize, Sort.by("dataInserimento").descending().and(Sort.by("id")));
-			}else if(dataUltimoContatto) {
-				pageable = PageRequest.of(pageNum, pageSize, Sort.by("dataUltimoContatto").descending().and(Sort.by("id")));
-			}else if(sedeLegale) {
-				pageable = PageRequest.of(pageNum, pageSize, Sort.by("sedeLegale.comune.provincia").descending().and(Sort.by("id")));
-			}else {
-				pageable = PageRequest.of(pageNum, pageSize,Sort.by("id").descending());
+			} else if (fatturatoAnnuale) {
+				pageable = PageRequest.of(pageNum, pageSize,
+						Sort.by("fatturatoAnnuale").descending().and(Sort.by("id")));
+			} else if (dataInserimento) {
+				pageable = PageRequest.of(pageNum, pageSize,
+						Sort.by("dataInserimento").descending().and(Sort.by("id")));
+			} else if (dataUltimoContatto) {
+				pageable = PageRequest.of(pageNum, pageSize,
+						Sort.by("dataUltimoContatto").descending().and(Sort.by("id")));
+			} else if (sedeLegale) {
+				pageable = PageRequest.of(pageNum, pageSize,
+						Sort.by("sedeLegale.comune.provincia").descending().and(Sort.by("id")));
+			} else {
+				pageable = PageRequest.of(pageNum, pageSize, Sort.by("id").descending());
 			}
-
-		}else {
-			if(ragioneSociale) {
+		} else {
+			if (ragioneSociale) {
 				pageable = PageRequest.of(pageNum, pageSize, Sort.by("ragioneSociale").and(Sort.by("id")));
-			}else if(fatturatoAnnuale) {
+			} else if (fatturatoAnnuale) {
 				pageable = PageRequest.of(pageNum, pageSize, Sort.by("fatturatoAnnuale").and(Sort.by("id")));
-			}else if(dataInserimento) {
+			} else if (dataInserimento) {
 				pageable = PageRequest.of(pageNum, pageSize, Sort.by("dataInserimento").and(Sort.by("id")));
-			}else if(dataUltimoContatto) {
+			} else if (dataUltimoContatto) {
 				pageable = PageRequest.of(pageNum, pageSize, Sort.by("dataUltimoContatto").and(Sort.by("id")));
-			}else if(sedeLegale) {
+			} else if (sedeLegale) {
 				pageable = PageRequest.of(pageNum, pageSize, Sort.by("sedeLegale.comune.provincia").and(Sort.by("id")));
-			}else {
-				pageable = PageRequest.of(pageNum, pageSize,Sort.by("id"));
+			} else {
+				pageable = PageRequest.of(pageNum, pageSize, Sort.by("id"));
 			}
 		}
 		return pager(pageable);
 	}
-	
-	private ResponseEntity<Page<ClienteDTO>> pager(Pageable pageable){
+
+	private ResponseEntity<Page<ClienteDTO>> pager(Pageable pageable) {
 		Page<Cliente> clienti = cls.findAll(pageable);
 		Page<ClienteDTO> clientiDto = clienti.map(ClienteDTO::fromCliente);
 		return new ResponseEntity<>(clientiDto, HttpStatus.OK);
 	}
-	
 
 	@GetMapping("/filtra")
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ResponseEntity<Page<ClienteDTO>> listaClienteFiltrata(@RequestParam int pageNum, @RequestParam int pageSize,
-			@RequestParam Optional<String> ragioneSociale, @RequestParam Optional<BigDecimal> fatturatoAnnuale,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataInserimento,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataUltimoContatto,
-			@RequestParam Optional<String> provincia) {
+			@RequestParam Optional<String> ragioneSociale, 
+			@RequestParam Optional<BigDecimal> fatturatoAnnualeMinimo,
+			@RequestParam Optional<BigDecimal> fatturatoAnnualeMassimo,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataInserimentoMinima,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataInserimentoMassima,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataUltimoContattoMinima,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataUltimoContattoMassima) {
+		Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by("id"));
+		Page<Cliente> clienti = null;
+		if (ragioneSociale.isPresent()) {
+			clienti = cls.findByRagioneSocialeContaining(ragioneSociale.get(), pageable);
+		} else if (fatturatoAnnualeMinimo.isPresent() && fatturatoAnnualeMassimo.isPresent()) {
+			clienti = cls.findByFatturatoAnnualeBetween(fatturatoAnnualeMinimo.get(), fatturatoAnnualeMassimo.get(),
+					pageable);
+		} else if (fatturatoAnnualeMinimo.isPresent()) {
+			clienti = cls.findByFatturatoAnnualeGreaterThanEqual(fatturatoAnnualeMinimo.get(), pageable);
+		} else if (fatturatoAnnualeMassimo.isPresent()) {
+			clienti = cls.findByFatturatoAnnualeLessThanEqual(fatturatoAnnualeMassimo.get(), pageable);
+		} else if (dataInserimentoMinima.isPresent() && dataInserimentoMassima.isPresent()) {
+			clienti = cls.findByDataInserimentoBetween(dataInserimentoMinima.get(),dataInserimentoMassima.get(), pageable);
+		} else if (dataInserimentoMinima.isPresent()) {
+			clienti = cls.findByDataInserimentoGreaterThanEqual(dataInserimentoMinima.get(), pageable);
+		} else if (dataInserimentoMassima.isPresent()) {
+			clienti = cls.findByDataInserimentoLessThanEqual(dataInserimentoMassima.get(), pageable);
+		} else if (dataUltimoContattoMinima.isPresent() && dataUltimoContattoMassima.isPresent()) {
+			clienti = cls.findByDataUltimoContattoBetween(dataUltimoContattoMinima.get(),dataUltimoContattoMassima.get(), pageable);
+		} else if (dataUltimoContattoMinima.isPresent()) {
+			clienti = cls.findByDataUltimoContattoGreaterThanEqual(dataUltimoContattoMinima.get(), pageable);
+		} else if (dataUltimoContattoMassima.isPresent()) {
+			clienti = cls.findByDataUltimoContattoLessThanEqual(dataUltimoContattoMassima.get(), pageable);
+		}
+		else {
+			clienti = cls.findAll(pageable);
+		}
 
-		Pageable pageable = PageRequest.of(pageNum, pageSize);
-
-		Page<Cliente> clienti = cls.findAll(pageable);
 		Page<ClienteDTO> clientiDto = clienti.map(ClienteDTO::fromCliente);
-
 		return new ResponseEntity<>(clientiDto, HttpStatus.OK);
 	}
 
