@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class IndirizzoDTO {
-	
+
 	private Long id;
 	private String via;
 	private String civico;
@@ -26,10 +26,12 @@ public class IndirizzoDTO {
 		iDto.setLocalita(i.getLocalita());
 		iDto.setCap(i.getCap());
 
-		iDto.setIdComune(i.getComune().getId());
-		iDto.setComune(i.getComune().getNome());
-		iDto.setIdProvincia(i.getComune().getProvincia().getId());
-		iDto.setProvincia(i.getComune().getProvincia().getNome());
+		if (iDto.getComune() != null) {
+			iDto.setIdComune(i.getComune().getId());
+			iDto.setComune(i.getComune().getNome());
+			iDto.setIdProvincia(i.getComune().getProvincia().getId());
+			iDto.setProvincia(i.getComune().getProvincia().getNome());
+		}
 		return iDto;
 	}
 
@@ -41,16 +43,17 @@ public class IndirizzoDTO {
 		ind.setLocalita(localita);
 		ind.setCap(cap);
 
-		Provincia prov = new Provincia();
-		prov.setId(idProvincia);
-		prov.setNome(provincia);
-		Comune com = new Comune();
-		com.setId(idComune);
-		com.setNome(comune);
-		com.setProvincia(prov);
-		
-		ind.setComune(com);
-		
+		if (idComune != null) {
+			Provincia prov = new Provincia();
+			prov.setId(idProvincia);
+			prov.setNome(provincia);
+			Comune com = new Comune();
+			com.setId(idComune);
+			com.setNome(comune);
+			com.setProvincia(prov);
+
+			ind.setComune(com);
+		}
 		return ind;
 	}
 }

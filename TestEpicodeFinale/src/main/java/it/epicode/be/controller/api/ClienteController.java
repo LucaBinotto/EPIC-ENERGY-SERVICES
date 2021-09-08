@@ -21,6 +21,7 @@ import it.epicode.be.dto.ClienteDTO;
 import it.epicode.be.exception.EntityNotFoundException;
 import it.epicode.be.model.Cliente;
 import it.epicode.be.service.ClienteService;
+import it.epicode.be.service.IndirizzoService;
 
 @RestController
 @RequestMapping("/api/cliente")
@@ -28,6 +29,8 @@ public class ClienteController {
 	
 	@Autowired
 	ClienteService cls;
+	@Autowired
+	IndirizzoService ins;
 	
 	@GetMapping //Restituisce tutti i clienti paginati
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")

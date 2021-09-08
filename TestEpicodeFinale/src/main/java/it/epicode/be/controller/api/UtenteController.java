@@ -41,8 +41,8 @@ public class UtenteController {
 	
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> update(@PathVariable Long numero, @RequestBody UtenteDTO utenteDto) {
-		if(!numero.equals(utenteDto.getId())) {
+	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody UtenteDTO utenteDto) {
+		if(!id.equals(utenteDto.getId())) {
 			return new ResponseEntity<>("L'Id non corrisponde",HttpStatus.BAD_REQUEST);
 		}
 		Utente utente = utenteDto.toUtente();

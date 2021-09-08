@@ -29,6 +29,8 @@ public class IndirizzoController {
 	@Autowired
 	IndirizzoService ins;
 	
+	//TODO aggiungere api per vedere e eliminare indirizzi non legati a clienti
+	
 	@GetMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ResponseEntity<Page<IndirizzoDTO>> listaIndirizzo(@RequestParam int pageNum, @RequestParam int pageSize) {
@@ -50,8 +52,8 @@ public class IndirizzoController {
 	
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> update(@PathVariable Long numero, @RequestBody IndirizzoDTO indirizzoDto) {
-		if(!numero.equals(indirizzoDto.getId())) {
+	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody IndirizzoDTO indirizzoDto) {
+		if(!id.equals(indirizzoDto.getId())) {
 			return new ResponseEntity<>("L'Id non corrisponde",HttpStatus.BAD_REQUEST);
 		}
 		Indirizzo indirizzo = indirizzoDto.toIndirizzo();

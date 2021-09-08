@@ -50,8 +50,8 @@ public class StatoFatturaController {
 	
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> update(@PathVariable Long numero, @RequestBody StatoFatturaDTO statoFatturaDto) {
-		if(!numero.equals(statoFatturaDto.getId())) {
+	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody StatoFatturaDTO statoFatturaDto) {
+		if(!id.equals(statoFatturaDto.getId())) {
 			return new ResponseEntity<>("L'Id non corrisponde",HttpStatus.BAD_REQUEST);
 		}
 		StatoFattura statoFattura = statoFatturaDto.toStatoFattura();

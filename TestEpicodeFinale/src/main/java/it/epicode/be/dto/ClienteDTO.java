@@ -54,7 +54,7 @@ public class ClienteDTO {
 		}
 		if (c.getSedeOperativa() != null) {
 			IndirizzoDTO iDtoOpe = IndirizzoDTO.fromIndirizzo(c.getSedeOperativa());
-			cDto.setSedeLegale(iDtoOpe);
+			cDto.setSedeOperativa(iDtoOpe);
 		}
 
 		return cDto;
@@ -77,12 +77,12 @@ public class ClienteDTO {
 		cli.setCognomeContatto(cognomeContatto);
 		cli.setTelefonoContatto(telefonoContatto);
 
-		if (cli.getSedeLegale() != null) {
+		if (sedeLegale != null) {
 			Indirizzo ind = sedeLegale.toIndirizzo();
 			cli.setSedeLegale(ind);
 		}
-		if (cli.getSedeOperativa() != null) {
-			Indirizzo ind = sedeOperativa.toIndirizzo();
+		if (sedeOperativa != null) {
+			Indirizzo  ind = sedeOperativa.toIndirizzo();
 			cli.setSedeOperativa(ind);
 		}
 

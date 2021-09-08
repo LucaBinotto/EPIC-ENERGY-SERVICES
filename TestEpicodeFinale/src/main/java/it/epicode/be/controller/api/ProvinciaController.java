@@ -50,8 +50,8 @@ public class ProvinciaController {
 	
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> update(@PathVariable Long numero, @RequestBody ProvinciaDTO provinciaDto) {
-		if(!numero.equals(provinciaDto.getId())) {
+	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ProvinciaDTO provinciaDto) {
+		if(!id.equals(provinciaDto.getId())) {
 			return new ResponseEntity<>("L'Id non corrisponde",HttpStatus.BAD_REQUEST);
 		}
 		Provincia provincia = provinciaDto.toProvincia();
