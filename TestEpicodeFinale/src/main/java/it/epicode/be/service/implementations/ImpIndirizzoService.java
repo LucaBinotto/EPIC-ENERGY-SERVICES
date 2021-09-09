@@ -50,4 +50,13 @@ public class ImpIndirizzoService implements IndirizzoService{
 	public Page<Indirizzo> findAll(Pageable pageable) {
 		return inr.findAll(pageable);
 	}
+
+	@Override
+	public Indirizzo findById(Long id) throws EntityNotFoundException {
+		Optional<Indirizzo> found = inr.findById(id);
+		if (found.isEmpty()) {
+			throw new EntityNotFoundException(entitynotfound, Indirizzo.class);
+		}
+		return found.get();
+	}
 }

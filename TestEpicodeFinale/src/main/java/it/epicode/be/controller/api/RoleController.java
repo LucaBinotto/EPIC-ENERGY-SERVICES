@@ -30,6 +30,19 @@ public class RoleController {
 	@Autowired
 	RoleService ros;
 	
+	@GetMapping("/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	public ResponseEntity<?> getRole(@PathVariable Long id) {
+		try {
+			Role role = ros.findById(id);
+			RoleDTO roleDto = RoleDTO.fromRole(role);
+			return new ResponseEntity<>(roleDto, HttpStatus.OK);
+		} catch (EntityNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	
 	@GetMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Page<RoleDTO>> listaRole(@RequestParam int pageNum, @RequestParam int pageSize) {

@@ -29,6 +29,19 @@ public class StatoFatturaController {
 	@Autowired
 	StatoFatturaService sts;
 	
+	@GetMapping("/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	public ResponseEntity<?> getStatoFattura(@PathVariable Long id) {
+		try {
+			StatoFattura statoFattura = sts.findById(id);
+			StatoFatturaDTO statoFatturaDto = StatoFatturaDTO.fromStatoFattura(statoFattura);
+			return new ResponseEntity<>(statoFatturaDto, HttpStatus.OK);
+		} catch (EntityNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	
 	@GetMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ResponseEntity<Page<StatoFatturaDTO>> listaStatoFattura(@RequestParam int pageNum, @RequestParam int pageSize) {

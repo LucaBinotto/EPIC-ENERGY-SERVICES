@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import it.epicode.be.dto.ClienteDTO;
 import it.epicode.be.exception.EntityNotFoundException;
 import it.epicode.be.exception.NotDuplicableEx;
@@ -85,12 +86,13 @@ public class ClienteController {
 		if (cliente.getSedeLegale() != null && cliente.getSedeLegale().getId() == null) {
 			cliente.setSedeLegale(ins.save(cliente.getSedeLegale()));
 		}
-
+		if (cliente.getSedeOperativa() != null && cliente.getSedeOperativa().getId() == null) {
+			cliente.setSedeOperativa(ins.save(cliente.getSedeOperativa()));
+		}
 		Cliente inserted = cls.save(cliente);
 		return new ResponseEntity<>(ClienteDTO.fromCliente(inserted), HttpStatus.BAD_REQUEST);
 	}
 
-	// TODO correzione POST E PUT
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ClienteDTO clienteDto) {

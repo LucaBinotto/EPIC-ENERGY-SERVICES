@@ -15,18 +15,18 @@ import it.epicode.be.repository.ProvinciaRepository;
 import it.epicode.be.service.ProvinciaService;
 
 @Service
-public class ImpProvinciaService implements ProvinciaService{
+public class ImpProvinciaService implements ProvinciaService {
 
 	@Autowired
 	private ProvinciaRepository prr;
 	@Value("${exception.entitynotfound}")
 	String entitynotfound;
-	
+
 	@Override
 	public Provincia save(Provincia provincia) {
 		return prr.save(provincia);
 	}
-	
+
 	@Override
 	public Provincia update(Provincia newProvincia) throws EntityNotFoundException {
 		Optional<Provincia> old = prr.findById(newProvincia.getId());
@@ -35,18 +35,27 @@ public class ImpProvinciaService implements ProvinciaService{
 		}
 		return prr.save(newProvincia);
 	}
-	
+
 	@Override
 	public void delete(Long id) throws EntityNotFoundException {
 		try {
 			prr.deleteById(id);
-		}catch(EmptyResultDataAccessException e) {
+		} catch (EmptyResultDataAccessException e) {
 			throw new EntityNotFoundException(entitynotfound, Provincia.class);
 		}
 	}
-	
+
 	@Override
 	public Page<Provincia> findAll(Pageable pageable) {
 		return prr.findAll(pageable);
+	}
+
+	@Override
+	public Provincia findById(Long id) throws EntityNotFoundException {
+		Optional<Provincia> found = prr.findById(id);
+		if (found.isEmpty()) {
+			throw new EntityNotFoundException(entitynotfound, Provincia.class);
+		}
+		return found.get();
 	}
 }

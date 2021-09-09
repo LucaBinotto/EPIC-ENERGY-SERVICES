@@ -29,6 +29,18 @@ public class ProvinciaController {
 	@Autowired
 	ProvinciaService prs;
 	
+	@GetMapping("/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	public ResponseEntity<?> getProvincia(@PathVariable Long id) {
+		try {
+			Provincia provincia = prs.findById(id);
+			ProvinciaDTO provinciaDto = ProvinciaDTO.fromProvincia(provincia);
+			return new ResponseEntity<>(provinciaDto, HttpStatus.OK);
+		} catch (EntityNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
+	
 	@GetMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ResponseEntity<Page<ProvinciaDTO>> listaProvincia(@RequestParam int pageNum, @RequestParam int pageSize) {

@@ -34,6 +34,18 @@ public class IndirizzoController {
 
 	// TODO aggiungere api per vedere e eliminare indirizzi non legati a clienti
 
+	@GetMapping("/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	public ResponseEntity<?> getIndirizzo(@PathVariable Long id) {
+		try {
+			Indirizzo indirizzo = ins.findById(id);
+			IndirizzoDTO indirizzoDto = IndirizzoDTO.fromIndirizzo(indirizzo);
+			return new ResponseEntity<>(indirizzoDto, HttpStatus.OK);
+		} catch (EntityNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
+	
 	@GetMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ResponseEntity<Page<IndirizzoDTO>> listaIndirizzo(@RequestParam int pageNum, @RequestParam int pageSize) {

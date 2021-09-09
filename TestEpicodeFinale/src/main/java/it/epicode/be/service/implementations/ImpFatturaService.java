@@ -24,13 +24,12 @@ public class ImpFatturaService implements FatturaService {
 	private FatturaRepository far;
 	@Value("${exception.entitynotfound}")
 	String entitynotfound;
-	
-	
+
 	@Override
 	public Fattura save(Fattura fattura) {
 		return far.save(fattura);
 	}
-	
+
 	@Override
 	public Fattura update(Fattura newFattura) throws EntityNotFoundException {
 		Optional<Fattura> old = far.findById(newFattura.getNumero());
@@ -39,16 +38,16 @@ public class ImpFatturaService implements FatturaService {
 		}
 		return far.save(newFattura);
 	}
-	
+
 	@Override
 	public void delete(Long id) throws EntityNotFoundException {
 		try {
 			far.deleteById(id);
-		}catch(EmptyResultDataAccessException e) {
+		} catch (EmptyResultDataAccessException e) {
 			throw new EntityNotFoundException(entitynotfound, Fattura.class);
 		}
 	}
-	
+
 	@Override
 	public Page<Fattura> findAll(Pageable pageable) {
 		return far.findAll(pageable);
@@ -97,5 +96,14 @@ public class ImpFatturaService implements FatturaService {
 	@Override
 	public Page<Fattura> findByStato(StatoFattura statoFattura, Pageable pageable) {
 		return far.findByStato(statoFattura, pageable);
+	}
+
+	@Override
+	public Fattura findByNumero(Long numero) throws EntityNotFoundException {
+		Optional<Fattura> a = far.findById(numero);
+		if (a.isEmpty()) {
+			throw new EntityNotFoundException(entitynotfound, Fattura.class);
+		}
+		return a.get();
 	}
 }

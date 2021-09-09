@@ -38,4 +38,6 @@ public interface FatturaService {
 
 	Page<Fattura> findByStato(StatoFattura statoFattura, Pageable pageable);
 
+	Fattura findByNumero(Long numero) throws EntityNotFoundException;
+
 }

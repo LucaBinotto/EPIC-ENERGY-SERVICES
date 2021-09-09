@@ -16,4 +16,6 @@ public interface ProvinciaService {
 
 	Page<Provincia> findAll(Pageable pageable);
 
+	Provincia findById(Long id) throws EntityNotFoundException;
+
 }

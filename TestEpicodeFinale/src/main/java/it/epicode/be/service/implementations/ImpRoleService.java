@@ -55,4 +55,13 @@ public class ImpRoleService implements RoleService {
 	public Optional<Role> findByRoleType(RoleType roleUser) {
 		return ror.findByRoleType(roleUser);
 	}
+
+	@Override
+	public Role findById(Long id) throws EntityNotFoundException {
+		Optional<Role> found = ror.findById(id);
+		if (found.isEmpty()) {
+			throw new EntityNotFoundException(entitynotfound, Role.class);
+		}
+		return found.get();
+	}
 }

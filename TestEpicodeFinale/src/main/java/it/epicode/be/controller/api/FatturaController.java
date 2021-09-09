@@ -42,6 +42,19 @@ public class FatturaController {
 	@Autowired
 	ClienteService cls;
 
+	@GetMapping("/{numero}")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	public ResponseEntity<?> getFattura(@PathVariable Long numero) {
+		try {
+			Fattura fattura = fas.findByNumero(numero);
+			FatturaDTO fatturaDTO = FatturaDTO.fromFattura(fattura);
+			return new ResponseEntity<>(fatturaDTO, HttpStatus.OK);
+		} catch (EntityNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	
 	@GetMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ResponseEntity<Page<FatturaDTO>> listaFattura(@RequestParam int pageNum, @RequestParam int pageSize) {

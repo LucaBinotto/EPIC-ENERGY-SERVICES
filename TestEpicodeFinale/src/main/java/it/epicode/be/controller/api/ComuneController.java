@@ -28,42 +28,54 @@ public class ComuneController {
 
 	@Autowired
 	ComuneService cos;
-	
+
+	@GetMapping("/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	public ResponseEntity<?> getComune(@PathVariable Long id) {
+		try {
+			Comune comune = cos.findById(id);
+			ComuneDTO comuneDto = ComuneDTO.fromComune(comune);
+			return new ResponseEntity<>(comuneDto, HttpStatus.OK);
+		} catch (EntityNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
+
 	@GetMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ResponseEntity<Page<ComuneDTO>> listaComune(@RequestParam int pageNum, @RequestParam int pageSize) {
 		Pageable pageable = PageRequest.of(pageNum, pageSize);
 		Page<Comune> comuni = cos.findAll(pageable);
 		Page<ComuneDTO> comuniDto = comuni.map(ComuneDTO::fromComune);
-				
+
 		return new ResponseEntity<>(comuniDto, HttpStatus.OK);
 	}
-	
-	//TODO correzione POST E PUT
+
+	// TODO correzione POST E PUT
 	@PostMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<ComuneDTO> save(@RequestBody ComuneDTO comuneDto) {
 		Comune comune = comuneDto.toComune();
 		Comune inserted = cos.save(comune);
-		return new ResponseEntity<>(ComuneDTO.fromComune(inserted),HttpStatus.CREATED);
+		return new ResponseEntity<>(ComuneDTO.fromComune(inserted), HttpStatus.CREATED);
 	}
-	
+
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ComuneDTO comuneDto) {
-		if(!id.equals(comuneDto.getId())) {
-			return new ResponseEntity<>("L'id non corrisponde",HttpStatus.BAD_REQUEST);
+		if (!id.equals(comuneDto.getId())) {
+			return new ResponseEntity<>("L'id non corrisponde", HttpStatus.BAD_REQUEST);
 		}
 		Comune comune = comuneDto.toComune();
 		Comune updated;
 		try {
 			updated = cos.update(comune);
-			return new ResponseEntity<>(ComuneDTO.fromComune(updated),HttpStatus.OK);
+			return new ResponseEntity<>(ComuneDTO.fromComune(updated), HttpStatus.OK);
 		} catch (EntityNotFoundException e) {
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
-		}		
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> delete(@PathVariable Long id) {

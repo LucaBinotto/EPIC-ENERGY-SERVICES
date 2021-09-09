@@ -16,4 +16,6 @@ public interface IndirizzoService {
 
 	Page<Indirizzo> findAll(Pageable pageable);
 
+	Indirizzo findById(Long id) throws EntityNotFoundException;
+
 }

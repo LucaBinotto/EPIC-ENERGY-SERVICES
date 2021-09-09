@@ -21,4 +21,6 @@ public interface RoleService {
 
 	Optional<Role> findByRoleType(RoleType roleUser);
 
+	Role findById(Long id) throws EntityNotFoundException;
+
 }
