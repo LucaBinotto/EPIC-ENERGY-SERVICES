@@ -13,5 +13,15 @@
     "name": "exception.entitynotfound",
     "type": "java.lang.String",
     "description": "A description for 'exception.entitynotfound'"
+  },
+  {
+    "name": "percorsi.comuniItaliani",
+    "type": "java.lang.String",
+    "description": "A description for 'percorsi.comuniItaliani'"
+  },
+  {
+    "name": "percorsi.provincieItaliane",
+    "type": "java.lang.String",
+    "description": "A description for 'percorsi.provincieItaliane'"
   }
 ]}

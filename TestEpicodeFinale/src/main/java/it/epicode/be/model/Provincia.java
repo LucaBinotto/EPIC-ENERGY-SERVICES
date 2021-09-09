@@ -26,4 +26,12 @@ public class Provincia {
 	private String regione;
 	
 	
+	public Provincia fromString(String[] provStr) {
+		Provincia prov = new Provincia();
+		prov.setNome(provStr[1]);
+		prov.setRegione(provStr[2]);
+		prov.setSigla(provStr[0]);
+		return prov;
+	}
+	
 }
