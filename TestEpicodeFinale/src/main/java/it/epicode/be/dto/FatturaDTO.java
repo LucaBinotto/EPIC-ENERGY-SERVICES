@@ -2,7 +2,6 @@ package it.epicode.be.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
 import it.epicode.be.model.Cliente;
 import it.epicode.be.model.Fattura;
 import it.epicode.be.model.StatoFattura;
@@ -26,10 +25,15 @@ public class FatturaDTO {
 		fDto.setAnno(f.getAnno());
 		fDto.setData(f.getData());
 		fDto.setImporto(f.getImporto());
-		fDto.setIdStato(f.getStato().getId());
-		fDto.setStato(f.getStato().getStato());
-		fDto.setIdCliente(f.getCliente().getId());
-		fDto.setCliente(f.getCliente().getRagioneSociale());
+
+		if (f.getStato() != null) {
+			fDto.setIdStato(f.getStato().getId());
+			fDto.setStato(f.getStato().getStato());
+		}
+		if (f.getCliente() != null) {
+			fDto.setIdCliente(f.getCliente().getId());
+			fDto.setCliente(f.getCliente().getRagioneSociale());
+		}
 		return fDto;
 	}
 
@@ -40,22 +44,18 @@ public class FatturaDTO {
 		fat.setData(data);
 		fat.setImporto(importo);
 
-		StatoFattura stf = new StatoFattura();
-		stf.setId(idStato);
-		stf.setStato(stato);
-		fat.setStato(stf);
-		
+		if (idStato != null) {
+			StatoFattura stf = new StatoFattura();
+			stf.setId(idStato);
+			stf.setStato(stato);
+			fat.setStato(stf);
+		}
+		if(idCliente!=null) {
 		Cliente cli = new Cliente();
 		cli.setId(idCliente);
 		cli.setRagioneSociale(cliente);
 		fat.setCliente(cli);
-		// TODO pulire codice
-//		if (str.findByStato(stato).isPresent()) {
-//			fat.setStato(str.findByStato(stato).get());
-//		}
-//		if (clr.findById(idCliente).isPresent()) {
-//			fat.setCliente(clr.findById(idCliente).get());
-//		}
+		}
 		return fat;
 	}
 

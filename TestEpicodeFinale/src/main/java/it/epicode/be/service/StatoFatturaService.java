@@ -16,4 +16,6 @@ public interface StatoFatturaService {
 
 	Page<StatoFattura> findAll(Pageable pageable);
 
+	StatoFattura findByStato(String string) throws EntityNotFoundException;
+
 }

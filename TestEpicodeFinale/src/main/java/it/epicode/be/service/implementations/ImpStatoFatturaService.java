@@ -49,4 +49,13 @@ public class ImpStatoFatturaService implements StatoFatturaService{
 	public Page<StatoFattura> findAll(Pageable pageable) {
 		return str.findAll(pageable);
 	}
+
+	@Override
+	public StatoFattura findByStato(String string) throws EntityNotFoundException {
+		Optional<StatoFattura> statfat = str.findByStato(string);
+		if(statfat.isEmpty()) {
+			throw new EntityNotFoundException(entitynotfound, StatoFattura.class);
+		}
+		return statfat.get();
+	}
 }

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -17,6 +18,7 @@ import javax.persistence.OneToOne;
 
 import org.springframework.stereotype.Component;
 
+import it.epicode.be.security.encription.StringAttributeConverter;
 import lombok.Data;
 
 @Data
@@ -44,6 +46,8 @@ public class Cliente {
 	private String nomeContatto;
 	private String cognomeContatto;
 	private String telefonoContatto;
+	@Convert(converter = StringAttributeConverter.class)
+	private String iban;
 	@OneToOne
 	private Indirizzo sedeLegale;
 	@OneToOne

@@ -87,6 +87,12 @@ public class ClienteController {
 			@RequestParam boolean dataInserimento, @RequestParam boolean dataUltimoContatto,
 			@RequestParam boolean sedeLegale, @RequestParam boolean discendente) {
 		Pageable pageable;
+//		List<String> attributi;            Per Ordinare con piu paramentri, accodandoli
+//		Sort b = Sort.unsorted();
+//		for(String s:attributi) {
+//			b.and(Sort.by(s));
+//		}
+//		PageRequest pageable =  PageRequest.of(pageNum, pageSize, b);
 		if (discendente) {
 			if (ragioneSociale) {
 				pageable = PageRequest.of(pageNum, pageSize, Sort.by("ragioneSociale").descending().and(Sort.by("id")));
@@ -171,4 +177,10 @@ public class ClienteController {
 		return new ResponseEntity<>(clientiDto, HttpStatus.OK);
 	}
 
+	@GetMapping("/ordina2")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	public ResponseEntity<Page<ClienteDTO>> listaClienteOrdinata2(Pageable pageable) {
+		return pager(pageable);
+	}
+	
 }

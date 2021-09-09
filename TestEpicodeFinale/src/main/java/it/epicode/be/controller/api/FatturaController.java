@@ -28,6 +28,7 @@ import it.epicode.be.exception.EntityNotFoundException;
 import it.epicode.be.model.Fattura;
 import it.epicode.be.model.StatoFattura;
 import it.epicode.be.service.FatturaService;
+import it.epicode.be.service.StatoFatturaService;
 
 @RestController
 @RequestMapping("/api/fattura")
@@ -35,6 +36,8 @@ public class FatturaController {
 
 	@Autowired
 	FatturaService fas;
+	@Autowired
+	StatoFatturaService sts;
 
 	@GetMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
@@ -54,7 +57,7 @@ public class FatturaController {
 		return new ResponseEntity<>(FatturaDTO.fromFattura(inserted), HttpStatus.CREATED);
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping("/{numero}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> update(@PathVariable Long numero, @RequestBody FatturaDTO fatturaDto) {
 		if (!numero.equals(fatturaDto.getNumero())) {
@@ -70,11 +73,11 @@ public class FatturaController {
 		}
 	}
 
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/{numero}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> delete(@PathVariable Long id) {
+	public ResponseEntity<?> delete(@PathVariable Long numero) {
 		try {
-			fas.delete(id);
+			fas.delete(numero);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} catch (EntityNotFoundException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -83,12 +86,14 @@ public class FatturaController {
 
 	@GetMapping("/filtra")
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-	public ResponseEntity<Page<FatturaDTO>> listaFatturaFiltrata(@RequestParam int pageNum, @RequestParam int pageSize,
-			@RequestParam Optional<String> ragioneSociale, @RequestParam Optional<BigDecimal> importoMinimo,
+	public ResponseEntity<?> listaFatturaFiltrata(@RequestParam int pageNum, @RequestParam int pageSize,
+			@RequestParam Optional<String> ragioneSociale, 
+			@RequestParam Optional<BigDecimal> importoMinimo,
 			@RequestParam Optional<BigDecimal> importoMassimo,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataMinima,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataMassima,
-			@RequestParam Optional<Integer> anno, @RequestParam Optional<StatoFattura> stato) {
+			@RequestParam Optional<Integer> anno, 
+			@RequestParam Optional<String> stato) {
 		Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by("numero"));
 		Page<Fattura> fatture = null;
 		if (ragioneSociale.isPresent()) {
@@ -108,7 +113,12 @@ public class FatturaController {
 		} else if (anno.isPresent()) {
 			fatture = fas.findByAnno(anno.get(), pageable);
 		} else if (stato.isPresent()) {
-			fatture = fas.findByStato(stato.get(), pageable);
+			try {
+				StatoFattura staf = sts.findByStato(stato.get());
+				fatture = fas.findByStato(staf, pageable);
+			} catch (EntityNotFoundException e) {
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+			}
 		} else {
 			fatture = fas.findAll(pageable);
 		}

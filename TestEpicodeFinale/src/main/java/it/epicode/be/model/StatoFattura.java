@@ -19,6 +19,6 @@ public class StatoFattura {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(unique=true, nullable=false)
 	private Long id;
-	@Column(unique=true)
+	@Column(unique=true, nullable=false)
 	private String stato;
 }

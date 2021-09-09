@@ -25,7 +25,7 @@ public class ClienteDTO {
 	private String nomeContatto;
 	private String cognomeContatto;
 	private String telefonoContatto;
-
+	private String iban;
 	private IndirizzoDTO sedeLegale;
 	private IndirizzoDTO sedeOperativa;
 
@@ -47,7 +47,7 @@ public class ClienteDTO {
 		cDto.setNomeContatto(c.getNomeContatto());
 		cDto.setCognomeContatto(c.getCognomeContatto());
 		cDto.setTelefonoContatto(c.getTelefonoContatto());
-
+		cDto.setIban(c.getIban());
 		if (c.getSedeLegale() != null) {
 			IndirizzoDTO iDtoLeg = IndirizzoDTO.fromIndirizzo(c.getSedeLegale());
 			cDto.setSedeLegale(iDtoLeg);
@@ -76,7 +76,7 @@ public class ClienteDTO {
 		cli.setNomeContatto(nomeContatto);
 		cli.setCognomeContatto(cognomeContatto);
 		cli.setTelefonoContatto(telefonoContatto);
-
+		cli.setIban(iban);
 		if (sedeLegale != null) {
 			Indirizzo ind = sedeLegale.toIndirizzo();
 			cli.setSedeLegale(ind);
