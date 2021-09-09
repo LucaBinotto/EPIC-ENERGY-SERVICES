@@ -3,7 +3,6 @@ package it.epicode.be.runner;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -17,9 +16,6 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
-
-import it.epicode.be.model.Comune;
-import it.epicode.be.model.Provincia;
 
 @Component
 public class StartupGestionale implements CommandLineRunner {
@@ -36,23 +32,23 @@ public class StartupGestionale implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		log.info("STARTUP GESTIONALE ENTRATO");
-		
-		List<String[]> province = leggiCSV(provincieItaliane);
-		List<String[]> comuni = leggiCSV(comuniItaliani);
-		
-		List<Provincia> prov = new ArrayList<>();
-		for(String[] a:province) {
-			prov.add(Provincia.fromString(a));
-		}
-		
-		List<Comune> comu = new ArrayList<>();
-		for(String[] a:comuni) {
-			comu.add(Comune.fromString(a));
-		}
-		
-		System.out.println(prov.get(0));
-		System.out.println(prov.get(100));
-		System.out.println(comu.get(100));
+//		
+//		List<String[]> province = leggiCSV(provincieItaliane);
+//		List<String[]> comuni = leggiCSV(comuniItaliani);
+//		
+//		List<Provincia> prov = new ArrayList<>();
+//		for(String[] a:province) {
+//			prov.add(Provincia.fromString(a));
+//		}
+//		
+//		List<Comune> comu = new ArrayList<>();
+//		for(String[] a:comuni) {
+//			comu.add(Comune.fromString(a));
+//		}
+//		
+//		System.out.println(prov.get(0));
+//		System.out.println(prov.get(100));
+//		System.out.println(comu.get(100));
 			
 //		System.out.println(province.get(0)[0]);
 //		System.out.println(province.get(0)[1]);
