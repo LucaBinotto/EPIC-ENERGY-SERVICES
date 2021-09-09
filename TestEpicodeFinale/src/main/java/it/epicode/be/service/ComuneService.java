@@ -16,4 +16,6 @@ public interface ComuneService {
 
 	Page<Comune> findAll(Pageable pageable);
 
+	Comune findById(Long id) throws EntityNotFoundException;
+
 }

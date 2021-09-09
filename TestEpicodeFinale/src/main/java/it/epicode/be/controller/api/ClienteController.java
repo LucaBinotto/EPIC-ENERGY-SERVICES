@@ -25,8 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import it.epicode.be.dto.ClienteDTO;
 import it.epicode.be.exception.EntityNotFoundException;
+import it.epicode.be.exception.NotDuplicableEx;
+import it.epicode.be.exception.NullValueNotAcceptable;
 import it.epicode.be.model.Cliente;
+import it.epicode.be.model.Cliente.TipoSocieta;
 import it.epicode.be.service.ClienteService;
+import it.epicode.be.service.IndirizzoService;
 
 @RestController
 @RequestMapping("/api/cliente")
@@ -34,6 +38,20 @@ public class ClienteController {
 
 	@Autowired
 	ClienteService cls;
+	@Autowired
+	IndirizzoService ins;
+
+	@GetMapping("/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	public ResponseEntity<?> getCliente(@PathVariable Long id) {
+		try {
+			Cliente cliente = cls.findById(id);
+			ClienteDTO clienteDto = ClienteDTO.fromCliente(cliente);
+			return new ResponseEntity<>(clienteDto, HttpStatus.OK);
+		} catch (EntityNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
 
 	@GetMapping // Restituisce tutti i clienti paginati
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
@@ -47,12 +65,32 @@ public class ClienteController {
 
 	@PostMapping // salva un cliente
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<ClienteDTO> save(@RequestBody ClienteDTO clienteDto) {
+	public ResponseEntity<?> save(@RequestBody ClienteDTO clienteDto) {
+		try {
+			if (clienteDto.getTipoSocieta() == null) {
+				throw new NullValueNotAcceptable("%s non può essere nullo", TipoSocieta.class);
+			} else if (clienteDto.getTipoSocieta() != null) {
+				TipoSocieta.valueOf(clienteDto.getTipoSocieta());
+			}
+			if (clienteDto.getPartitaIva() != null) {
+				cls.findByPartitaIva(clienteDto.getPartitaIva());
+				throw new NotDuplicableEx("Il valore del campo partitaIva deve essere unico");
+			}
+
+		} catch (NullValueNotAcceptable | IllegalArgumentException | NotDuplicableEx e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (EntityNotFoundException e) {}
+
 		Cliente cliente = clienteDto.toCliente();
+		if (cliente.getSedeLegale() != null && cliente.getSedeLegale().getId() == null) {
+			cliente.setSedeLegale(ins.save(cliente.getSedeLegale()));
+		}
+
 		Cliente inserted = cls.save(cliente);
-		return new ResponseEntity<>(ClienteDTO.fromCliente(inserted), HttpStatus.CREATED);
+		return new ResponseEntity<>(ClienteDTO.fromCliente(inserted), HttpStatus.BAD_REQUEST);
 	}
 
+	// TODO correzione POST E PUT
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ClienteDTO clienteDto) {
@@ -138,8 +176,7 @@ public class ClienteController {
 	@GetMapping("/filtra")
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ResponseEntity<Page<ClienteDTO>> listaClienteFiltrata(@RequestParam int pageNum, @RequestParam int pageSize,
-			@RequestParam Optional<String> ragioneSociale, 
-			@RequestParam Optional<BigDecimal> fatturatoAnnualeMinimo,
+			@RequestParam Optional<String> ragioneSociale, @RequestParam Optional<BigDecimal> fatturatoAnnualeMinimo,
 			@RequestParam Optional<BigDecimal> fatturatoAnnualeMassimo,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataInserimentoMinima,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataInserimentoMassima,
@@ -157,19 +194,20 @@ public class ClienteController {
 		} else if (fatturatoAnnualeMassimo.isPresent()) {
 			clienti = cls.findByFatturatoAnnualeLessThanEqual(fatturatoAnnualeMassimo.get(), pageable);
 		} else if (dataInserimentoMinima.isPresent() && dataInserimentoMassima.isPresent()) {
-			clienti = cls.findByDataInserimentoBetween(dataInserimentoMinima.get(),dataInserimentoMassima.get(), pageable);
+			clienti = cls.findByDataInserimentoBetween(dataInserimentoMinima.get(), dataInserimentoMassima.get(),
+					pageable);
 		} else if (dataInserimentoMinima.isPresent()) {
 			clienti = cls.findByDataInserimentoGreaterThanEqual(dataInserimentoMinima.get(), pageable);
 		} else if (dataInserimentoMassima.isPresent()) {
 			clienti = cls.findByDataInserimentoLessThanEqual(dataInserimentoMassima.get(), pageable);
 		} else if (dataUltimoContattoMinima.isPresent() && dataUltimoContattoMassima.isPresent()) {
-			clienti = cls.findByDataUltimoContattoBetween(dataUltimoContattoMinima.get(),dataUltimoContattoMassima.get(), pageable);
+			clienti = cls.findByDataUltimoContattoBetween(dataUltimoContattoMinima.get(),
+					dataUltimoContattoMassima.get(), pageable);
 		} else if (dataUltimoContattoMinima.isPresent()) {
 			clienti = cls.findByDataUltimoContattoGreaterThanEqual(dataUltimoContattoMinima.get(), pageable);
 		} else if (dataUltimoContattoMassima.isPresent()) {
 			clienti = cls.findByDataUltimoContattoLessThanEqual(dataUltimoContattoMassima.get(), pageable);
-		}
-		else {
+		} else {
 			clienti = cls.findAll(pageable);
 		}
 
@@ -182,5 +220,5 @@ public class ClienteController {
 	public ResponseEntity<Page<ClienteDTO>> listaClienteOrdinata2(Pageable pageable) {
 		return pager(pageable);
 	}
-	
+
 }

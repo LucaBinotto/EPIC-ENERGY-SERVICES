@@ -3,6 +3,7 @@ package it.epicode.be.runner;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -17,14 +18,17 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 
+import it.epicode.be.model.Comune;
+import it.epicode.be.model.Provincia;
+
 @Component
 public class StartupGestionale implements CommandLineRunner {
 
 	Logger log = LoggerFactory.getLogger(StartupGestionale.class);
 	
-	@Value("${percorsi.provincieItaliane}")
+	@Value("${percorsi.provincie.italiane}")
 	private String provincieItaliane;
-	@Value("${percorsi.comuniItaliani}")
+	@Value("${percorsi.comuni.italiani}")
 	private String comuniItaliani;
 	
 	
@@ -32,22 +36,38 @@ public class StartupGestionale implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		log.info("STARTUP GESTIONALE ENTRATO");
-		// popolazioneDatabase();
 		
-		List<String[]> stringone = leggiCSV(provincieItaliane);
+		List<String[]> province = leggiCSV(provincieItaliane);
+		List<String[]> comuni = leggiCSV(comuniItaliani);
 		
-		//String primaLetta = stringone.get(0)[0];
-//		System.out.println(stringone.get(0)[0]);
-//		System.out.println(stringone.get(0)[1]);
-//		System.out.println(stringone.get(0)[2]);
+		List<Provincia> prov = new ArrayList<>();
+		for(String[] a:province) {
+			prov.add(Provincia.fromString(a));
+		}
 		
+		List<Comune> comu = new ArrayList<>();
+		for(String[] a:comuni) {
+			comu.add(Comune.fromString(a));
+		}
+		
+		System.out.println(prov.get(0));
+		System.out.println(prov.get(100));
+		System.out.println(comu.get(100));
+			
+//		System.out.println(province.get(0)[0]);
+//		System.out.println(province.get(0)[1]);
+//		System.out.println(province.get(0)[2]);
+//		
+//		System.out.println(comuni.get(0)[1]);
+//		System.out.println(comuni.get(0)[2]);
+//		System.out.println(comuni.get(0)[3]);
 		
 		
 		
 	}
 
 	public List<String[]> leggiCSV(String percorso) throws IOException, CsvException{
-		FileReader reader = new FileReader(new File("data/province-italiane.csv"));
+		FileReader reader = new FileReader(new File(percorso));
 		CSVParser parser = new CSVParserBuilder()
 				.withSeparator(';')
 				.withIgnoreQuotations(true) //inutile per questo progetto, non ci sono apici

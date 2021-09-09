@@ -2,6 +2,7 @@ package it.epicode.be.repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,5 +35,7 @@ public interface ClienteRepository  extends JpaRepository<Cliente,Long>{
 	Page<Cliente> findByDataUltimoContattoGreaterThanEqual(LocalDate localDate, Pageable pageable);
 
 	Page<Cliente> findByDataUltimoContattoLessThanEqual(LocalDate localDate, Pageable pageable);
+
+	Optional<Cliente> findByPartitaIva(String partitaIva);
 
 }

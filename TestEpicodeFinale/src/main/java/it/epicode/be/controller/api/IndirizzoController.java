@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import it.epicode.be.dto.IndirizzoDTO;
 import it.epicode.be.exception.EntityNotFoundException;
 import it.epicode.be.model.Indirizzo;
+import it.epicode.be.service.ComuneService;
 import it.epicode.be.service.IndirizzoService;
 
 @RestController
@@ -28,44 +29,59 @@ public class IndirizzoController {
 
 	@Autowired
 	IndirizzoService ins;
-	
-	//TODO aggiungere api per vedere e eliminare indirizzi non legati a clienti
-	
+	@Autowired
+	ComuneService cos;
+
+	// TODO aggiungere api per vedere e eliminare indirizzi non legati a clienti
+
 	@GetMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ResponseEntity<Page<IndirizzoDTO>> listaIndirizzo(@RequestParam int pageNum, @RequestParam int pageSize) {
 		Pageable pageable = PageRequest.of(pageNum, pageSize);
 		Page<Indirizzo> indirizzi = ins.findAll(pageable);
 		Page<IndirizzoDTO> indirizziDto = indirizzi.map(IndirizzoDTO::fromIndirizzo);
-				
+
 		return new ResponseEntity<>(indirizziDto, HttpStatus.OK);
 	}
-	
-	
+
 	@PostMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<IndirizzoDTO> save(@RequestBody IndirizzoDTO indirizzoDto) {
+	public ResponseEntity<?> save(@RequestBody IndirizzoDTO indirizzoDto) {
+
+		if (indirizzoDto.getIdComune() != null) {
+			try {
+				cos.findById(indirizzoDto.getIdComune());
+			} catch (EntityNotFoundException e) {
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+			}
+		}
 		Indirizzo indirizzo = indirizzoDto.toIndirizzo();
-		Indirizzo inserted = ins.save(indirizzo);
-		return new ResponseEntity<>(IndirizzoDTO.fromIndirizzo(inserted),HttpStatus.CREATED);
+		Indirizzo inserte = ins.save(indirizzo);
+		try {
+			inserte = ins.update(indirizzo);
+			return new ResponseEntity<>(IndirizzoDTO.fromIndirizzo(inserte), HttpStatus.OK);
+		} catch (EntityNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+
 	}
-	
+
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody IndirizzoDTO indirizzoDto) {
-		if(!id.equals(indirizzoDto.getId())) {
-			return new ResponseEntity<>("L'Id non corrisponde",HttpStatus.BAD_REQUEST);
+		if (!id.equals(indirizzoDto.getId())) {
+			return new ResponseEntity<>("L'Id non corrisponde", HttpStatus.BAD_REQUEST);
 		}
 		Indirizzo indirizzo = indirizzoDto.toIndirizzo();
 		Indirizzo updated;
 		try {
 			updated = ins.update(indirizzo);
-			return new ResponseEntity<>(IndirizzoDTO.fromIndirizzo(updated),HttpStatus.OK);
+			return new ResponseEntity<>(IndirizzoDTO.fromIndirizzo(updated), HttpStatus.OK);
 		} catch (EntityNotFoundException e) {
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
-		}		
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> delete(@PathVariable Long id) {

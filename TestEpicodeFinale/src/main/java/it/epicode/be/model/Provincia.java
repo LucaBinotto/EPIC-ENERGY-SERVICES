@@ -26,7 +26,7 @@ public class Provincia {
 	private String regione;
 	
 	
-	public Provincia fromString(String[] provStr) {
+	public static Provincia fromString(String[] provStr) {
 		Provincia prov = new Provincia();
 		prov.setNome(provStr[1]);
 		prov.setRegione(provStr[2]);

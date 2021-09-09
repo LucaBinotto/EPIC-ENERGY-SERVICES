@@ -116,4 +116,13 @@ public class ImpClienteService implements ClienteService {
 		}
 		return cliente.get();
 	}
+
+	@Override
+	public Cliente findByPartitaIva(String partitaIva) throws EntityNotFoundException {
+		Optional<Cliente> cliente = clr.findByPartitaIva(partitaIva);
+		if (cliente.isEmpty()) {
+			throw new EntityNotFoundException(entitynotfound, Cliente.class);
+		}
+		return cliente.get();
+	}
 }

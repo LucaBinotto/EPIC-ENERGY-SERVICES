@@ -35,6 +35,7 @@ public class Cliente {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable=false)
 	private TipoSocieta tipoSocieta;
+	@Column(unique=true)
 	private String partitaIva;
 	private String email;
 	private LocalDate dataInserimento;

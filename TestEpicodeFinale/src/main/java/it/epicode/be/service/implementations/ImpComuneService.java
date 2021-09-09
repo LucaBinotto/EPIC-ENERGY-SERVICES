@@ -49,4 +49,15 @@ public class ImpComuneService implements ComuneService{
 	public Page<Comune> findAll(Pageable pageable) {
 		return cor.findAll(pageable);
 	}
+
+	@Override
+	public Comune findById(Long id) throws EntityNotFoundException {
+		
+		Optional<Comune> found = cor.findById(id);
+		if (found.isEmpty()) {
+			throw new EntityNotFoundException(entitynotfound, Comune.class);
+		}
+		
+		return found.get();
+	}
 }

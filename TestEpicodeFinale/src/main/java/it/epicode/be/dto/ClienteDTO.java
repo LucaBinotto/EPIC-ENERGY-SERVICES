@@ -13,7 +13,7 @@ public class ClienteDTO {
 
 	private Long id;
 	private String ragioneSociale;
-	private TipoSocieta tipoSocieta;
+	private String tipoSocieta;
 	private String partitaIva;
 	private String email;
 	private LocalDate dataInserimento;
@@ -35,7 +35,7 @@ public class ClienteDTO {
 		ClienteDTO cDto = new ClienteDTO();
 		cDto.setId(c.getId());
 		cDto.setRagioneSociale(c.getRagioneSociale());
-		cDto.setTipoSocieta(c.getTipoSocieta());
+		cDto.setTipoSocieta(c.getTipoSocieta().toString());
 		cDto.setPartitaIva(c.getPartitaIva());
 		cDto.setEmail(c.getEmail());
 		cDto.setDataInserimento(c.getDataInserimento());
@@ -60,11 +60,11 @@ public class ClienteDTO {
 		return cDto;
 	}
 
-	public Cliente toCliente() {
+	public Cliente toCliente(){
 		Cliente cli = new Cliente();
 		cli.setId(id);
 		cli.setRagioneSociale(ragioneSociale);
-		cli.setTipoSocieta(tipoSocieta);
+		cli.setTipoSocieta(TipoSocieta.valueOf(tipoSocieta));
 		cli.setPartitaIva(partitaIva);
 		cli.setEmail(email);
 		cli.setDataInserimento(dataInserimento);

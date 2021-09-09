@@ -15,14 +15,27 @@ import lombok.Data;
 @Entity
 @Component
 public class Comune {
-
-	//TODO Aggiungere Codice Comune
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(unique = true, nullable = false)
 	private Long id;
+	private String codiceComune;
 	private String nome;
 	@ManyToOne
 	private Provincia provincia;
+	
+	
+	public static Comune fromString(String[] comuStr) {
+		Comune comu = new Comune();
+		comu.setNome(comuStr[2]);
+		comu.setCodiceComune(comuStr[1]);
+		
+		Provincia prov = new Provincia();
+		prov.setNome(comuStr[3]);
+		
+		comu.setProvincia(prov);
+		
+		return comu;
+	}
 }
