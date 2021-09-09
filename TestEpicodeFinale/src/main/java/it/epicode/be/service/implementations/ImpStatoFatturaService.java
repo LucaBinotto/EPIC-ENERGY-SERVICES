@@ -58,4 +58,13 @@ public class ImpStatoFatturaService implements StatoFatturaService{
 		}
 		return statfat.get();
 	}
+
+	@Override
+	public StatoFattura findById(Long id) throws EntityNotFoundException {
+		Optional<StatoFattura> statfat = str.findById(id);
+		if(statfat.isEmpty()) {
+			throw new EntityNotFoundException(entitynotfound, StatoFattura.class);
+		}
+		return statfat.get();
+	}
 }

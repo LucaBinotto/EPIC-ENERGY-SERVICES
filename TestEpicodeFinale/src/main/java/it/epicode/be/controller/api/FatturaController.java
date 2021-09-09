@@ -27,6 +27,7 @@ import it.epicode.be.dto.FatturaDTO;
 import it.epicode.be.exception.EntityNotFoundException;
 import it.epicode.be.model.Fattura;
 import it.epicode.be.model.StatoFattura;
+import it.epicode.be.service.ClienteService;
 import it.epicode.be.service.FatturaService;
 import it.epicode.be.service.StatoFatturaService;
 
@@ -38,6 +39,8 @@ public class FatturaController {
 	FatturaService fas;
 	@Autowired
 	StatoFatturaService sts;
+	@Autowired
+	ClienteService cls;
 
 	@GetMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
@@ -51,10 +54,25 @@ public class FatturaController {
 
 	@PostMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<FatturaDTO> save(@RequestBody FatturaDTO fatturaDto) {
+	public ResponseEntity<?> save(@RequestBody FatturaDTO fatturaDto) {
 		Fattura fattura = fatturaDto.toFattura();
+		if (fatturaDto.getIdStato() != null) {
+			try {
+				fattura.setStato(sts.findById(fatturaDto.getIdStato()));
+			} catch (EntityNotFoundException e) {
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+			}
+		}
+		if (fatturaDto.getIdCliente() != null) {
+			try {
+				fattura.setCliente(cls.findById(fatturaDto.getIdCliente()));
+			} catch (EntityNotFoundException e) {
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+			}
+		}
 		Fattura inserted = fas.save(fattura);
 		return new ResponseEntity<>(FatturaDTO.fromFattura(inserted), HttpStatus.CREATED);
+
 	}
 
 	@PutMapping("/{numero}")
@@ -64,6 +82,20 @@ public class FatturaController {
 			return new ResponseEntity<>("Il numero fattura non corrisponde", HttpStatus.BAD_REQUEST);
 		}
 		Fattura fattura = fatturaDto.toFattura();
+		if (fatturaDto.getIdStato() != null) {
+			try {
+				sts.findById(fatturaDto.getIdStato());
+			} catch (EntityNotFoundException e) {
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+			}
+		}
+		if (fatturaDto.getIdCliente() != null) {
+			try {
+				cls.findById(fatturaDto.getIdCliente());
+			} catch (EntityNotFoundException e) {
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+			}
+		}
 		Fattura updated;
 		try {
 			updated = fas.update(fattura);
@@ -87,13 +119,11 @@ public class FatturaController {
 	@GetMapping("/filtra")
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ResponseEntity<?> listaFatturaFiltrata(@RequestParam int pageNum, @RequestParam int pageSize,
-			@RequestParam Optional<String> ragioneSociale, 
-			@RequestParam Optional<BigDecimal> importoMinimo,
+			@RequestParam Optional<String> ragioneSociale, @RequestParam Optional<BigDecimal> importoMinimo,
 			@RequestParam Optional<BigDecimal> importoMassimo,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataMinima,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> dataMassima,
-			@RequestParam Optional<Integer> anno, 
-			@RequestParam Optional<String> stato) {
+			@RequestParam Optional<Integer> anno, @RequestParam Optional<String> stato) {
 		Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by("numero"));
 		Page<Fattura> fatture = null;
 		if (ragioneSociale.isPresent()) {

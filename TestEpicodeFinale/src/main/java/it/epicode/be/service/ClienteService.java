@@ -40,4 +40,6 @@ public interface ClienteService {
 	Page<Cliente> findByDataUltimoContattoGreaterThanEqual(LocalDate localDate, Pageable pageable);
 
 	Page<Cliente> findByDataUltimoContattoLessThanEqual(LocalDate localDate, Pageable pageable);
+
+	Cliente findById(Long idCliente) throws EntityNotFoundException;
 }

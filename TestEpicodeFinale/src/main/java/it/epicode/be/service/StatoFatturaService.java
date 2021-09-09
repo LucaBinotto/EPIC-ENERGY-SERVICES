@@ -18,4 +18,6 @@ public interface StatoFatturaService {
 
 	StatoFattura findByStato(String string) throws EntityNotFoundException;
 
+	StatoFattura findById(Long id) throws EntityNotFoundException;
+
 }

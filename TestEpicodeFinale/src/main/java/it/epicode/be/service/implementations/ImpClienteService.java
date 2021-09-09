@@ -17,19 +17,18 @@ import it.epicode.be.repository.ClienteRepository;
 import it.epicode.be.service.ClienteService;
 
 @Service
-public class ImpClienteService implements ClienteService{
-	
+public class ImpClienteService implements ClienteService {
+
 	@Autowired
 	private ClienteRepository clr;
 	@Value("${exception.entitynotfound}")
 	String entitynotfound;
-	
-	
+
 	@Override
 	public Cliente save(Cliente cliente) {
 		return clr.save(cliente);
 	}
-	
+
 	@Override
 	public Cliente update(Cliente newCliente) throws EntityNotFoundException {
 		Optional<Cliente> old = clr.findById(newCliente.getId());
@@ -38,12 +37,12 @@ public class ImpClienteService implements ClienteService{
 		}
 		return clr.save(newCliente);
 	}
-	
+
 	@Override
 	public void delete(Long id) throws EntityNotFoundException {
 		try {
 			clr.deleteById(id);
-		}catch(EmptyResultDataAccessException e) {
+		} catch (EmptyResultDataAccessException e) {
 			throw new EntityNotFoundException(entitynotfound, Cliente.class);
 		}
 	}
@@ -55,18 +54,18 @@ public class ImpClienteService implements ClienteService{
 
 	@Override
 	public Page<Cliente> findByRagioneSociale(String ragioneSociale, Pageable pageable) {
-		return clr.findByRagioneSociale(ragioneSociale,pageable);
+		return clr.findByRagioneSociale(ragioneSociale, pageable);
 	}
 
 	@Override
 	public Page<Cliente> findByRagioneSocialeContaining(String ragioneSociale, Pageable pageable) {
-		return clr.findByRagioneSocialeContaining(ragioneSociale,pageable);
+		return clr.findByRagioneSocialeContaining(ragioneSociale, pageable);
 	}
 
 	@Override
 	public Page<Cliente> findByFatturatoAnnualeBetween(BigDecimal bigDecimal, BigDecimal bigDecimal2,
 			Pageable pageable) {
-		return clr.findByFatturatoAnnualeBetween(bigDecimal,bigDecimal2, pageable);
+		return clr.findByFatturatoAnnualeBetween(bigDecimal, bigDecimal2, pageable);
 	}
 
 	@Override
@@ -107,5 +106,14 @@ public class ImpClienteService implements ClienteService{
 	@Override
 	public Page<Cliente> findByDataUltimoContattoLessThanEqual(LocalDate localDate, Pageable pageable) {
 		return clr.findByDataUltimoContattoLessThanEqual(localDate, pageable);
+	}
+
+	@Override
+	public Cliente findById(Long idCliente) throws EntityNotFoundException {
+		Optional<Cliente> cliente = clr.findById(idCliente);
+		if (cliente.isEmpty()) {
+			throw new EntityNotFoundException(entitynotfound, Cliente.class);
+		}
+		return cliente.get();
 	}
 }
