@@ -51,6 +51,18 @@ public class ProvinciaController {
 		return new ResponseEntity<>(provincieDto, HttpStatus.OK);
 	}
 	
+	@GetMapping("/n/{nome}")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	public ResponseEntity<?> getProvincia(@PathVariable String nome) {
+		try {
+			Provincia provincia = prs.findByNome(nome);
+			ProvinciaDTO provinciaDto = ProvinciaDTO.fromProvincia(provincia);
+			return new ResponseEntity<>(provinciaDto, HttpStatus.OK);
+		} catch (EntityNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
+	
 	
 	@PostMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN')")

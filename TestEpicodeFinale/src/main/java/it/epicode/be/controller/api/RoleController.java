@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import it.epicode.be.dto.RoleDTO;
 import it.epicode.be.exception.EntityNotFoundException;
 import it.epicode.be.model.Role;
+import it.epicode.be.model.Role.RoleType;
 import it.epicode.be.service.RoleService;
 
 @RestController
@@ -31,7 +32,7 @@ public class RoleController {
 	RoleService ros;
 	
 	@GetMapping("/{id}")
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getRole(@PathVariable Long id) {
 		try {
 			Role role = ros.findById(id);
@@ -56,7 +57,15 @@ public class RoleController {
 	
 	@PostMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<RoleDTO> save(@RequestBody RoleDTO roleDto) {
+	public ResponseEntity<?> save(@RequestBody RoleDTO roleDto) {
+		try {
+		if (roleDto.getRoleType() != null) {
+			RoleType.valueOf(roleDto.getRoleType());
+		}
+		}catch(IllegalArgumentException e){
+			return new ResponseEntity<>(e.getMessage()+" avaiable option: ROLE_ADMIN,ROLE_USER", HttpStatus.BAD_REQUEST);
+		}
+		
 		Role role = roleDto.toRole();
 		Role inserted = ros.save(role);
 		return new ResponseEntity<>(RoleDTO.fromRole(inserted),HttpStatus.CREATED);

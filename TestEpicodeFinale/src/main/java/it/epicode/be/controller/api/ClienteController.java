@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import it.epicode.be.dto.ClienteDTO;
 import it.epicode.be.exception.EntityNotFoundException;
 import it.epicode.be.exception.NotDuplicableEx;
@@ -80,7 +79,8 @@ public class ClienteController {
 
 		} catch (NullValueNotAcceptable | IllegalArgumentException | NotDuplicableEx e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-		} catch (EntityNotFoundException e) {}
+		} catch (EntityNotFoundException e) {
+		}
 
 		Cliente cliente = clienteDto.toCliente();
 		if (cliente.getSedeLegale() != null && cliente.getSedeLegale().getId() == null) {
@@ -99,7 +99,31 @@ public class ClienteController {
 		if (!id.equals(clienteDto.getId())) {
 			return new ResponseEntity<>("L'id non corrisponde", HttpStatus.BAD_REQUEST);
 		}
+		try {
+			if (clienteDto.getTipoSocieta() == null) {
+				throw new NullValueNotAcceptable("%s non può essere nullo", TipoSocieta.class);
+			} else if (clienteDto.getTipoSocieta() != null) {
+				TipoSocieta.valueOf(clienteDto.getTipoSocieta());
+			}
+			if (clienteDto.getPartitaIva() != null) {
+				cls.findByPartitaIva(clienteDto.getPartitaIva());
+				throw new NotDuplicableEx("Il valore del campo partitaIva deve essere unico");
+			
+			}
+		} catch (IllegalArgumentException e) {
+			return new ResponseEntity<>(e.getMessage()+" avaiable option: PA,SAS,SPA,SRL", HttpStatus.BAD_REQUEST);
+		} catch (NullValueNotAcceptable | NotDuplicableEx e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (EntityNotFoundException e) {
+		}
+
 		Cliente cliente = clienteDto.toCliente();
+		if (cliente.getSedeLegale() != null && cliente.getSedeLegale().getId() == null) {
+			cliente.setSedeLegale(ins.save(cliente.getSedeLegale()));
+		}
+		if (cliente.getSedeOperativa() != null && cliente.getSedeOperativa().getId() == null) {
+			cliente.setSedeOperativa(ins.save(cliente.getSedeOperativa()));
+		}
 		Cliente updated;
 		try {
 			updated = cls.update(cliente);
