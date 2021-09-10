@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -18,8 +19,11 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 
+import it.epicode.be.exception.EntityNotFoundException;
 import it.epicode.be.model.Comune;
 import it.epicode.be.model.Provincia;
+import it.epicode.be.service.ComuneService;
+import it.epicode.be.service.ProvinciaService;
 
 @Component
 public class StartupGestionale implements CommandLineRunner {
@@ -30,39 +34,35 @@ public class StartupGestionale implements CommandLineRunner {
 	private String provincieItaliane;
 	@Value("${percorsi.comuni.italiani}")
 	private String comuniItaliani;
-	
+	@Autowired
+	ProvinciaService prs;
+	@Autowired
+	ComuneService cos;
 	
 	@Override
 	public void run(String... args) throws Exception {
 
 		log.info("STARTUP GESTIONALE ENTRATO");
 		
-		List<String[]> province = leggiCSV(provincieItaliane);
-		List<String[]> comuni = leggiCSV(comuniItaliani);
+//		List<String[]> province = leggiCSV(provincieItaliane);
+//		List<String[]> comuni = leggiCSV(comuniItaliani);
+//		salvaSuDatabase(province,comuni);
 		
+	}
+
+	void salvaSuDatabase(List<String[]> province, List<String[]> comuni) throws EntityNotFoundException{
 		List<Provincia> prov = new ArrayList<>();
 		for(String[] a:province) {
+			prs.save(Provincia.fromString(a));
 			prov.add(Provincia.fromString(a));
+			
 		}
 		
 		List<Comune> comu = new ArrayList<>();
 		for(String[] a:comuni) {
+			cos.save(Comune.fromString(a));
 			comu.add(Comune.fromString(a));
 		}
-		
-		System.out.println(prov.get(0));
-		System.out.println(prov.get(100));
-		System.out.println(comu.get(100));
-			
-//		System.out.println(province.get(0)[0]);
-//		System.out.println(province.get(0)[1]);
-//		System.out.println(province.get(0)[2]);
-//		
-//		System.out.println(comuni.get(0)[1]);
-//		System.out.println(comuni.get(0)[2]);
-//		System.out.println(comuni.get(0)[3]);
-		
-		
 		
 	}
 
@@ -77,7 +77,6 @@ public class StartupGestionale implements CommandLineRunner {
 				.withSkipLines(1)
 				.withCSVParser(parser)
 				.build();
-		//List<String[]> dati = csvReader.readAll();
 		
 		return csvReader.readAll();
 	}

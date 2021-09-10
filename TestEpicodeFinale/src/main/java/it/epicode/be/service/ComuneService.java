@@ -8,7 +8,7 @@ import it.epicode.be.model.Comune;
 
 public interface ComuneService {
 
-	Comune save(Comune comune);
+	Comune save(Comune comune) throws EntityNotFoundException;
 
 	Comune update(Comune newComune) throws EntityNotFoundException;
 

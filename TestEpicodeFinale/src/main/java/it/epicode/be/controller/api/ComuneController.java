@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import it.epicode.be.dto.ComuneDTO;
 import it.epicode.be.exception.EntityNotFoundException;
 import it.epicode.be.model.Comune;
+import it.epicode.be.model.Provincia;
 import it.epicode.be.service.ComuneService;
+import it.epicode.be.service.ProvinciaService;
 
 @RestController
 @RequestMapping("/api/comune")
@@ -28,6 +30,8 @@ public class ComuneController {
 
 	@Autowired
 	ComuneService cos;
+	@Autowired
+	ProvinciaService prs;
 
 	@GetMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
@@ -54,9 +58,22 @@ public class ComuneController {
 	// TODO correzione POST E PUT
 	@PostMapping
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<ComuneDTO> save(@RequestBody ComuneDTO comuneDto) {
+	public ResponseEntity<?> save(@RequestBody ComuneDTO comuneDto) {
 		Comune comune = comuneDto.toComune();
-		Comune inserted = cos.save(comune);
+		if (comune.getProvincia().getNome() != null) {
+			try {
+				Provincia prov = prs.findByNome(comune.getProvincia().getNome());
+				comune.setProvincia(prov);
+			} catch (EntityNotFoundException e) {
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+			}
+		}
+		Comune inserted;
+		try {
+			inserted = cos.save(comune);
+		} catch (EntityNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 		return new ResponseEntity<>(ComuneDTO.fromComune(inserted), HttpStatus.CREATED);
 	}
 

@@ -18,4 +18,6 @@ public interface ProvinciaService {
 
 	Provincia findById(Long id) throws EntityNotFoundException;
 
+	Provincia findByNome(String provincia) throws EntityNotFoundException;
+
 }

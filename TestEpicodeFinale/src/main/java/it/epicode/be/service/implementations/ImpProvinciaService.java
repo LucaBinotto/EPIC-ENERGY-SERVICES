@@ -58,4 +58,12 @@ public class ImpProvinciaService implements ProvinciaService {
 		}
 		return found.get();
 	}
+
+	@Override
+	public Provincia findByNome(String provincia) throws EntityNotFoundException {
+		Optional<Provincia> found = prr.findByNome(provincia);
+		if (found.isEmpty()) {
+			throw new EntityNotFoundException(entitynotfound, Provincia.class);
+		}		return found.get();
+	}
 }
