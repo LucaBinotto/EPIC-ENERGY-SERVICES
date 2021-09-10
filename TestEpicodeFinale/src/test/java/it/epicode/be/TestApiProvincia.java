@@ -39,17 +39,24 @@ class TestApiProvincia {
 	
 	private static Long provinciaSalvata;
 	
+	private String prova = 	"""
+			 					ciao prova
+			 				fafa
+			 				fafaf""";
+	
 	@Test
 	@WithMockUser(roles="ADMIN")
 	@Order(1)
 	void salvataggioProvincia() throws Exception {
+		System.out.println(prova);
 		mock.perform(post("/api/provincia")
 		.contentType(MediaType.APPLICATION_JSON)
-		.content("{\n"
-				+ "    \"nome\": \"FakeProvincia\",\n"
-				+ "    \"sigla\": \"FKP\",\n"
-				+ "    \"regione\": \"FakeLand\"\n"
-				+ "}"))
+		.content("""
+				{
+				    "nome": "FakeProvincia",
+				    "sigla": "FKP",
+				    "regione": "FakeLand"
+				}"""))
 		.andExpect(status().isCreated());
 		
 		Provincia prov = prs.findByNome("FakeProvincia");
