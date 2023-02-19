@@ -1,4 +1,52 @@
 -------------------------------------------------------------------------------
 Test set: it.epicode.be.TestApiProvincia
 -------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.644 s - in it.epicode.be.TestApiProvincia
+Tests run: 6, Failures: 3, Errors: 2, Skipped: 0, Time elapsed: 3.55 s <<< FAILURE! - in it.epicode.be.TestApiProvincia
+salvataggioProvincia  Time elapsed: 0.189 s  <<< ERROR!
+org.springframework.web.util.NestedServletException: 
+Handler dispatch failed; nested exception is java.lang.Error: Unresolved compilation problems: 
+	The method setId(Long) is undefined for the type ProvinciaDTO
+	The method setNome(String) is undefined for the type ProvinciaDTO
+	The method setSigla(String) is undefined for the type ProvinciaDTO
+	The method setRegione(String) is undefined for the type ProvinciaDTO
+
+	at it.epicode.be.TestApiProvincia.salvataggioProvincia(TestApiProvincia.java:52)
+Caused by: java.lang.Error: 
+Unresolved compilation problems: 
+	The method setId(Long) is undefined for the type ProvinciaDTO
+	The method setNome(String) is undefined for the type ProvinciaDTO
+	The method setSigla(String) is undefined for the type ProvinciaDTO
+	The method setRegione(String) is undefined for the type ProvinciaDTO
+
+	at it.epicode.be.TestApiProvincia.salvataggioProvincia(TestApiProvincia.java:52)
+
+getProvinciaById  Time elapsed: 0.01 s  <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<400>
+	at it.epicode.be.TestApiProvincia.getProvinciaById(TestApiProvincia.java:73)
+
+getAllProvincia  Time elapsed: 0.075 s  <<< ERROR!
+org.springframework.web.util.NestedServletException: 
+Handler dispatch failed; nested exception is java.lang.Error: Unresolved compilation problems: 
+	The method setId(Long) is undefined for the type ProvinciaDTO
+	The method setNome(String) is undefined for the type ProvinciaDTO
+	The method setSigla(String) is undefined for the type ProvinciaDTO
+	The method setRegione(String) is undefined for the type ProvinciaDTO
+
+	at it.epicode.be.TestApiProvincia.getAllProvincia(TestApiProvincia.java:82)
+Caused by: java.lang.Error: 
+Unresolved compilation problems: 
+	The method setId(Long) is undefined for the type ProvinciaDTO
+	The method setNome(String) is undefined for the type ProvinciaDTO
+	The method setSigla(String) is undefined for the type ProvinciaDTO
+	The method setRegione(String) is undefined for the type ProvinciaDTO
+
+	at it.epicode.be.TestApiProvincia.getAllProvincia(TestApiProvincia.java:82)
+
+updateProvincia  Time elapsed: 0.006 s  <<< FAILURE!
+java.lang.AssertionError: Status expected:<200> but was:<400>
+	at it.epicode.be.TestApiProvincia.updateProvincia(TestApiProvincia.java:100)
+
+deleteProvincia  Time elapsed: 0.005 s  <<< FAILURE!
+java.lang.AssertionError: Status expected:<204> but was:<400>
+	at it.epicode.be.TestApiProvincia.deleteProvincia(TestApiProvincia.java:123)
+
