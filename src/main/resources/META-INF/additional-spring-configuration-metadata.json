@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "jwt.expirationms",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.expirationms'"
+  },
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.secret'"
+  },
+  {
+    "name": "exception.entitynotfound",
+    "type": "java.lang.String",
+    "description": "A description for 'exception.entitynotfound'"
+  },
+  {
+    "name": "exception.valorenullononvalido",
+    "type": "java.lang.String",
+    "description": "A description for 'exception.valorenullononvalido'"
+  },
+  {
+    "name": "percorsi.provincie.italiane",
+    "type": "java.lang.String",
+    "description": "A description for 'percorsi.provincie.italiane'"
+  },
+  {
+    "name": "percorsi.comuni.italiani",
+    "type": "java.lang.String",
+    "description": "A description for 'percorsi.comuni.italiani'"
+  }
+]}
